@@ -7,6 +7,5 @@ const isDevelopment = import.meta.env.DEV
 <template>
   <VApp>
     <BoilerplateView v-if="isDevelopment" />
-    <RouterView v-if="!isDevelopment" />
   </VApp>
 </template>
