@@ -9,14 +9,29 @@ name 'siku_notification'
 
 lua54 'yes'
 
-shared_scripts {}
+shared_scripts {
+  '@siku_core/init.lua',
+  'config/notification.lua',
+  'config/translation.lua',
+  'shared/utils/locale.lua',
+}
 
-server_scripts {}
+server_scripts {
+  'server/init.lua',
+  'server/main.lua',
+}
 
-client_scripts {}
+client_scripts {
+  'client/main.lua',
+}
 
-ui_page ''
+ui_page 'web/dist/index.html'
 
-files {}
+files {
+  'translations/*.lua',
+  'web/dist/**/*',
+}
 
-dependencies {}
+dependencies {
+  'siku_core',
+}

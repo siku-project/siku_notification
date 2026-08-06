@@ -4,8 +4,11 @@ import type { Component } from 'vue'
 import DevTopBar from '@/components/boilerplate/DevTopBar.vue'
 import DevFab from '@/components/boilerplate/DevFab.vue'
 import DevViewSelector from '@/components/boilerplate/DevViewSelector.vue'
+import NotificationDevPanel from '@/components/dev/NotificationDevPanel.vue'
 
-const viewComponents: Record<string, Component> = {}
+const viewComponents: Record<string, Component> = {
+  Notifications: NotificationDevPanel,
+}
 
 const views: string[] = Object.keys(viewComponents)
 const currentView = ref('none')
