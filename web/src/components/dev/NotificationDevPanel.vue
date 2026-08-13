@@ -9,10 +9,9 @@ import type {
   NotificationPosition,
   NotificationType,
 } from '@/utils/notifications'
+import SAMPLE_IMAGE from '@/assets/boilerplate-background.jpg'
 
 const store = useNotificationStore()
-
-const SAMPLE_IMAGE = '/boilerplate-background.jpg'
 
 const title = ref('Notification')
 const subtitle = ref('')
@@ -22,7 +21,6 @@ const image = ref('')
 const imageMode = ref<NotificationImageMode>('side')
 const position = ref<NotificationPosition>('top-right')
 const duration = ref(5000)
-const infinite = ref(false)
 const spamCount = ref(0)
 const type = ref<NotificationType>('default')
 
@@ -36,7 +34,7 @@ const send = (): void => {
     image: image.value || undefined,
     imageMode: imageMode.value,
     position: position.value,
-    duration: infinite.value ? 0 : duration.value,
+    duration: duration.value,
   })
 }
 
@@ -208,19 +206,7 @@ const presetStatus = (value: Exclude<NotificationType, 'default'>): void => {
         <div class="row row--end">
           <label class="field field--grow">
             <span class="field__label">Durée (ms)</span>
-            <input
-              v-model.number="duration"
-              class="field__input"
-              type="number"
-              min="0"
-              step="500"
-              :disabled="infinite"
-            />
-          </label>
-
-          <label class="check">
-            <input v-model="infinite" type="checkbox" />
-            <span>Infinie</span>
+            <input v-model.number="duration" class="field__input" type="number" min="500" step="500" />
           </label>
         </div>
 

@@ -73,6 +73,7 @@ export const NOTIFICATION_DEFAULT_ICONS: Record<NotificationType, string | undef
 
 export const DEFAULT_POSITION: NotificationPosition = 'top-right'
 export const DEFAULT_DURATION = 5000
+export const MAX_DURATION = 2_147_483_647
 export const DEFAULT_IMAGE_MODE: NotificationImageMode = 'side'
 
 export interface NotificationDefaults {
@@ -111,12 +112,10 @@ export const normalizeNotification = (
     imageMode: input.imageMode === 'background' ? 'background' : DEFAULT_IMAGE_MODE,
     position: isPosition(input.position) ? input.position : defaults.position,
     duration:
-      typeof input.duration === 'number' && input.duration >= 0
-        ? input.duration
+      typeof input.duration === 'number' && Number.isFinite(input.duration) && input.duration > 0
+        ? Math.min(input.duration, MAX_DURATION)
         : defaults.duration,
     color: input.color,
     priority: input.priority,
   }
 }
-
-export const isInfinite = (item: NotificationItem): boolean => item.duration <= 0

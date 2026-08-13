@@ -15,7 +15,8 @@ NotificationConfig = {
   defaultPosition = 'top-right',
 
   --- Default lifetime in milliseconds used when a notification does not
-  --- specify one. 0 keeps the notification until it is hidden.
+  --- specify one. Must be strictly positive — every notification expires;
+  --- an invalid duration falls back to this value.
   ---
   --- Default: 5000
   defaultDuration = 5000,

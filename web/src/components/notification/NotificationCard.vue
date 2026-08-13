@@ -2,8 +2,8 @@
 import { computed } from 'vue'
 import IcePanel from '@/components/ui/IcePanel.vue'
 import NotificationProgress from './NotificationProgress.vue'
-import { isInfinite } from '@/utils/notifications'
 import type { NotificationItem } from '@/utils/notifications'
+import { resolveIcon } from '@/utils/icons'
 
 const props = defineProps<{
   notification: NotificationItem
@@ -12,7 +12,6 @@ const props = defineProps<{
 const hasImage = computed(() => Boolean(props.notification.image))
 const isBackground = computed(() => props.notification.imageMode === 'background' && hasImage.value)
 const isSide = computed(() => props.notification.imageMode === 'side' && hasImage.value)
-const infinite = computed(() => isInfinite(props.notification))
 const typed = computed(() => props.notification.type !== 'default')
 
 const backgroundStyle = computed(() => ({
@@ -21,7 +20,10 @@ const backgroundStyle = computed(() => ({
 </script>
 
 <template>
-  <div class="card" :class="[`card--${notification.type}`, { 'card--typed': typed }]">
+  <div
+    class="card"
+    :class="[`card--${notification.type}`, { 'card--typed': typed, 'card--background': isBackground }]"
+  >
     <IcePanel class="card__panel">
       <div class="card__layers">
         <template v-if="isBackground">
@@ -36,9 +38,12 @@ const backgroundStyle = computed(() => ({
 
           <div class="card__content">
             <div v-if="notification.icon || notification.title" class="card__head">
-              <v-icon v-if="notification.icon" class="card__icon" size="18">
-                {{ notification.icon }}
-              </v-icon>
+              <v-icon
+                v-if="notification.icon"
+                class="card__icon"
+                size="18"
+                :icon="resolveIcon(notification.icon)"
+              />
               <p v-if="notification.title" class="card__title">{{ notification.title }}</p>
             </div>
 
@@ -53,7 +58,7 @@ const backgroundStyle = computed(() => ({
         <span v-if="typed" class="card__ring" aria-hidden="true"></span>
         <span v-if="notification.type === 'success'" class="card__shine" aria-hidden="true"></span>
 
-        <NotificationProgress v-if="!infinite" :duration="notification.duration" />
+        <NotificationProgress :duration="notification.duration" />
       </div>
     </IcePanel>
   </div>
