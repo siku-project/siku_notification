@@ -18,12 +18,11 @@
     "check": "bun run format && bun run type-check && bun run lint"
   },
   "dependencies": {
-    "@mdi/font": "^7.4.47",
+    "@mdi/js": "^7.4.47",
     "axios": "^1.19.0",
     "pinia": "^4.0.2",
     "vue": "^3.5.40",
     "vue-i18n": "^11.4.8",
-    "vue-router": "^5.2.0",
     "vuetify": "^4.1.7"
   },
   "devDependencies": {
