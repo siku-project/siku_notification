@@ -3,6 +3,7 @@ import { version as vueVersion } from 'vue'
 import { ref } from 'vue'
 import axios from 'axios'
 import IcePanel from '@/components/ui/IcePanel.vue'
+import { resolveIcon } from '@/utils/icons'
 
 defineProps<{
   currentView: string
@@ -35,7 +36,7 @@ const deps = [
       :class="expanded ? 'w-64' : 'h-12 w-12'"
     >
       <div v-if="!expanded" class="flex h-12 w-12 items-center justify-center">
-        <v-icon class="text-glacier-100/55" size="17">mdi-code-tags</v-icon>
+        <v-icon class="text-glacier-100/55" size="17" :icon="resolveIcon('mdi-code-tags')" />
       </div>
 
       <div v-else class="flex flex-col gap-4 p-6">

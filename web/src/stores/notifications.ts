@@ -8,6 +8,7 @@ import type {
 } from '@/utils/notifications'
 import {
   DEFAULT_NOTIFICATION_DEFAULTS,
+  MAX_DURATION,
   NOTIFICATION_POSITIONS,
   normalizeNotification,
 } from '@/utils/notifications'
@@ -38,9 +39,6 @@ export const useNotificationStore = defineStore('notifications', () => {
   }
 
   const startTimer = (item: NotificationItem): void => {
-    if (item.duration <= 0) {
-      return
-    }
     timers.set(
       item.id,
       window.setTimeout(() => dismiss(item.id), item.duration),
@@ -109,8 +107,12 @@ export const useNotificationStore = defineStore('notifications', () => {
     if (config.defaultPosition && NOTIFICATION_POSITIONS.includes(config.defaultPosition)) {
       defaults.value = { ...defaults.value, position: config.defaultPosition }
     }
-    if (typeof config.defaultDuration === 'number' && config.defaultDuration >= 0) {
-      defaults.value = { ...defaults.value, duration: config.defaultDuration }
+    if (
+      typeof config.defaultDuration === 'number' &&
+      Number.isFinite(config.defaultDuration) &&
+      config.defaultDuration > 0
+    ) {
+      defaults.value = { ...defaults.value, duration: Math.min(config.defaultDuration, MAX_DURATION) }
     }
   }
 

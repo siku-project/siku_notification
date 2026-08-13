@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import IcePanel from '@/components/ui/IcePanel.vue'
+import { resolveIcon } from '@/utils/icons'
 
 defineProps<{
   views: string[]
@@ -18,7 +19,11 @@ const open = ref(false)
   <div class="fixed bottom-7 right-7 z-50">
     <IcePanel variant="secondary" circle interactive class="h-12 w-12" @click="open = true">
       <div class="flex h-12 w-12 items-center justify-center">
-        <v-icon class="text-glacier-100/55" size="17">mdi-view-dashboard-outline</v-icon>
+        <v-icon
+          class="text-glacier-100/55"
+          size="17"
+          :icon="resolveIcon('mdi-view-dashboard-outline')"
+        />
       </div>
     </IcePanel>
 
@@ -44,14 +49,17 @@ const open = ref(false)
             >
               {{ view }}
             </span>
-            <v-icon v-if="currentView === view" class="text-glacier-200/75" size="14">
-              mdi-check
-            </v-icon>
+            <v-icon
+              v-if="currentView === view"
+              class="text-glacier-200/75"
+              size="14"
+              :icon="resolveIcon('mdi-check')"
+            />
           </div>
         </div>
 
         <div v-else class="flex flex-col items-center gap-5 py-10">
-          <v-icon class="text-glacier-300/25" size="36">mdi-monitor-off</v-icon>
+          <v-icon class="text-glacier-300/25" size="36" :icon="resolveIcon('mdi-monitor-off')" />
           <span class="text-sm font-light tracking-wide text-glacier-200/50"
             >No interface available</span
           >
