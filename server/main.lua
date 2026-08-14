@@ -10,7 +10,7 @@ local function showNotification(source, data)
     return
   end
 
-  TriggerClientEvent('siku:notification:show', source, data)
+  TriggerClientEvent('siku_notification:client:show', source, data)
 end
 
 --- Hides every notification for a player.
@@ -22,7 +22,7 @@ local function hideNotifications(source)
     return
   end
 
-  TriggerClientEvent('siku:notification:hide', source)
+  TriggerClientEvent('siku_notification:client:hide', source)
 end
 
 exports('show', showNotification)
