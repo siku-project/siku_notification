@@ -22,20 +22,20 @@ const handleMessage = (event: MessageEvent): void => {
   if (!payload || typeof payload !== 'object') {
     return
   }
-  if (payload.action === 'siku:notification:show' && payload.notification) {
+  if (payload.action === 'siku_notification:nui:show' && payload.notification) {
     store.show(payload.notification)
-  } else if (payload.action === 'siku:notification:hide') {
+  } else if (payload.action === 'siku_notification:nui:hide') {
     store.clear()
-  } else if (payload.action === 'siku:notification:setConfig' && payload.config) {
+  } else if (payload.action === 'siku_notification:nui:setConfig' && payload.config) {
     store.setConfig(payload.config)
-  } else if (payload.action === 'siku:notification:setLocale' && payload.locale) {
+  } else if (payload.action === 'siku_notification:nui:setLocale' && payload.locale) {
     applyLocale(payload.locale)
   }
 }
 
 onMounted(() => {
   window.addEventListener('message', handleMessage)
-  sendNuiCallback('siku:callback:ready')
+  sendNuiCallback('siku_notification:nui:ready')
 })
 
 onBeforeUnmount(() => {

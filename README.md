@@ -97,7 +97,7 @@ Siku.Notification(data)           -- client
 
 ### Events
 
-`siku:notification:show` and `siku:notification:hide` (server → client) mirror the export payloads.
+`siku_notification:client:show` and `siku_notification:client:hide` (server → client) mirror the export payloads.
 
 ### Positions
 

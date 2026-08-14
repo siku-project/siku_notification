@@ -21,7 +21,7 @@ end
 ---@return nil
 local function sendLocale()
   SendNUIMessage({
-    action = 'siku:notification:setLocale',
+    action = 'siku_notification:nui:setLocale',
     locale = {
       language = TranslationConfig.language,
       translations = loadTranslations(),
@@ -33,7 +33,7 @@ end
 ---@return nil
 local function sendConfig()
   SendNUIMessage({
-    action = 'siku:notification:setConfig',
+    action = 'siku_notification:nui:setConfig',
     config = {
       maxVisiblePerPosition = NotificationConfig.maxVisiblePerPosition,
       defaultPosition = NotificationConfig.defaultPosition,
@@ -42,7 +42,7 @@ local function sendConfig()
   })
 end
 
-RegisterNUICallback('siku:callback:ready', function(_, cb)
+RegisterNUICallback('siku_notification:nui:ready', function(_, cb)
   sendLocale()
   sendConfig()
   cb({})
@@ -58,7 +58,7 @@ local function showNotification(data)
   end
 
   SendNUIMessage({
-    action = 'siku:notification:show',
+    action = 'siku_notification:nui:show',
     notification = data,
   })
 end
@@ -67,15 +67,15 @@ end
 ---@return nil
 local function hideNotifications()
   SendNUIMessage({
-    action = 'siku:notification:hide',
+    action = 'siku_notification:nui:hide',
   })
 end
 
-RegisterNetEvent('siku:notification:show', function(data)
+RegisterNetEvent('siku_notification:client:show', function(data)
   showNotification(data)
 end)
 
-RegisterNetEvent('siku:notification:hide', function()
+RegisterNetEvent('siku_notification:client:hide', function()
   hideNotifications()
 end)
 
