@@ -13,7 +13,6 @@ shared_scripts {
   '@siku_core/init.lua',
   'config/notification.lua',
   'config/translation.lua',
-  'shared/utils/locale.lua',
 }
 
 server_scripts {
