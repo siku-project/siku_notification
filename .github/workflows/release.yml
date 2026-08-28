@@ -27,7 +27,7 @@ jobs:
       - name: Assemble package
         run: |
           mkdir -p package/siku_notification/web
-          cp -r client server shared config translations fxmanifest.lua README.md package/siku_notification/
+          cp -r client server config translations fxmanifest.lua README.md package/siku_notification/
           cp -r web/dist package/siku_notification/web/dist
           cd package
           zip -r ../siku_notification.zip siku_notification
