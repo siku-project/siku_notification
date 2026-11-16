@@ -1,28 +1,30 @@
 # siku_notification
 
-The official notification system of the SIKU ecosystem — a modern, modular and high-performance resource delivering immersive, consistent, and seamlessly integrated player notifications.
+The official notification system of the SIKU ecosystem: nine screen positions, a queue per position, merged repeats, images, and the `@siku/ui` design system shared with every SIKU resource.
 
-![Version](https://img.shields.io/badge/version-1.0.0-4785bd)
+![Version](https://img.shields.io/badge/version-2.0.0-4785bd)
 ![FiveM](https://img.shields.io/badge/fx__version-cerulean-4785bd)
 ![Lua](https://img.shields.io/badge/Lua-5.4-4785bd)
-![Vue](https://img.shields.io/badge/NUI-Vue%203-4785bd)
+![Svelte](https://img.shields.io/badge/NUI-Svelte%205-4785bd)
+![Design system](https://img.shields.io/badge/%40siku%2Fui-1.21.0-4785bd)
 
 ## Features
 
-- **Ice Glass interface** — a Vue 3 NUI following the SIKU art direction: no blur, glacier palette, thin luminous borders, frozen-glass panels.
-- **5 notification types** — `default`, `success`, `warning`, `error`, `info` — each with its own accent and default icon.
-- **Rich content** — title, subtitle, description, icon, and an optional image rendered as a side thumbnail or as the card background.
-- **9 screen positions**, each with its own stack and enter/leave/reorder animations.
-- **Guaranteed delivery** — up to 5 visible notifications per position; the overflow waits in a FIFO queue and is promoted as soon as a slot frees. Every notification expires (durations are strictly positive and clamped), so the queue can never stall.
-- **CSS progress line** — the remaining lifetime melts away, zero JavaScript per frame.
-- **Lean bundle** — ~500 KB of NUI assets, with tree-shaken SVG icons instead of icon fonts.
-- **i18n pipeline** — the server language is pushed to the NUI at runtime.
+- **Design system cards** — every notification is the `Toast` of `@siku/ui`: tokens only, glacier accent for what is running, no blur, legible over the game.
+- **5 types** — `default`, `success`, `warning`, `error`, `info`, each with its tone and default icon.
+- **Rich content** — title, description, a value aligned on the right (`+1 250 $`, `×1`), any icon of the design system, and an optional image as a thumbnail or as the card background under a veil.
+- **9 positions** inside the GTA safe zone, each with its own stack: the newest card is always nearest the screen edge.
+- **Queue per position** — up to `maxVisiblePerPosition` cards at once, the overflow waits in order of arrival and a small counter says how many. Every notification expires, so a stack can never stall.
+- **Merged repeats** — a notification identical to one on screen bumps a `×N` counter and restarts the timer instead of stacking the same card twice.
+- **CSS timer** — the remaining lifetime melts away without any JavaScript per frame.
+- **Ids** — `show` returns an id, `dismiss` removes one notification, on screen or still waiting.
+- **Validation on both sides** — the Lua layer refuses what cannot be shown and logs why; the interface never trusts a payload.
 
 ## Dependencies
 
 | Resource | Required | Purpose |
 |---|---|---|
-| [`siku_core`](https://github.com/siku-project/siku_core) | Yes | Framework core: dependency guard, version check, and the `Siku.Notification` proxy other resources call. |
+| [`siku_core`](https://github.com/siku-project/siku_core) ≥ 1.7.1 | Yes | Dependency guard, version check, logs, translations, and the `Siku.notification` proxy other resources call. |
 
 `siku_core` must be started **before** `siku_notification`.
 
@@ -30,13 +32,11 @@ The official notification system of the SIKU ecosystem — a modern, modular and
 
 ### From a release (recommended)
 
-Download the latest [release](https://github.com/siku-project/siku_notification/releases) zip and extract it into your server resources folder. The zip ships with the NUI **already built** (`web/dist` only) — no build step, ready to run.
-
-> The release does not include the NUI source code. If you want to customize the interface, install from source instead.
+Download the latest [release](https://github.com/siku-project/siku_notification/releases) zip and extract it into your resources folder. The zip ships with the interface **already built** (`web/dist` only), ready to run.
 
 ### From source
 
-The repository contains the full NUI source but **no build** (`web/dist` is not versioned) — you must build it yourself:
+The repository holds the interface source but **no build** (`web/dist` is not versioned):
 
 ```bash
 git clone git@github.com:siku-project/siku_notification.git
@@ -58,89 +58,101 @@ All options live in `config/` and are documented inline.
 
 | File | Options |
 |---|---|
-| `config/notification.lua` | `maxVisiblePerPosition`, `defaultPosition`, `defaultDuration` |
+| `config/notification.lua` | `maxVisiblePerPosition`, `defaultPosition`, `defaultDuration`, `maxDuration`, `coalesce` |
 | `config/translation.lua` | `language` (`fr` / `en`) |
 
 ## API
 
+### Payload
+
+```lua
+{
+  type = 'success',                  -- 'default' | 'success' | 'warning' | 'error' | 'info'
+  title = 'Objet reçu',              -- up to 64 characters; a lone description becomes the title
+  description = 'Trousse de soin.',  -- up to 256 characters
+  value = '×1',                      -- up to 32 characters, aligned on the right
+  icon = 'medkit',                   -- an icon of @siku/ui, defaults to the icon of the type
+  image = 'https://…/photo.webp',    -- https://, nui:// or data:image/
+  imageMode = 'side',                -- 'side' (thumbnail) | 'background' (full card under a veil)
+  position = 'top-right',            -- one of the 9 positions, defaults to the config
+  duration = 5000,                   -- ms, strictly positive, capped by maxDuration
+}
+```
+
+A title or a description is required. `subtitle` is still read as the old name of `value`; `center-left` and `center-right` as the old names of `left` and `right`.
+
 ### Server exports
 
 ```lua
-exports.siku_notification:show(source, {
-  type = 'success',                  -- 'default' | 'success' | 'warning' | 'error' | 'info'
-  title = 'Item received',           -- short heading
-  subtitle = 'x1 First aid kit',     -- optional secondary line
-  description = 'Added to your inventory.', -- optional body text
-  icon = 'mdi-medical-bag',          -- optional, defaults to the type icon
-  image = 'https://…/photo.jpg',     -- optional image
-  imageMode = 'side',                -- 'side' (thumbnail) | 'background' (full card)
-  position = 'top-right',            -- one of the 9 positions, defaults to config
-  duration = 5000,                   -- ms, strictly positive, defaults to config
-})
-
-exports.siku_notification:hide(source)   -- clears every notification of the player
+local id = exports.siku_notification:show(source, payload) -- source or -1 for everyone
+exports.siku_notification:dismiss(source, id)
+exports.siku_notification:hide(source)                     -- everything, queue included
+exports.siku_notification:hide(source, 'top-right')        -- one position
 ```
 
 ### Client exports
 
-Same surface, scoped to the local player: `show(data)`, `hide()`.
+Same surface, scoped to the local player: `show(payload)`, `dismiss(id)`, `hide(position?)`.
 
 ### Through siku_core (recommended)
 
-SIKU resources should not call the exports directly — `siku_core` proxies them with a
-started-state guard and graceful degradation:
+SIKU resources do not call the exports directly: `siku_core` proxies them with a started-state guard and graceful degradation.
 
 ```lua
-Siku.Notification(source, data)   -- server
-Siku.Notification(data)           -- client
+Siku.notification.show(source, payload) -- server
+Siku.notification.show(payload)         -- client
 ```
 
 ### Events
 
-`siku_notification:client:show` and `siku_notification:client:hide` (server → client) mirror the export payloads.
+`siku_notification:client:show`, `siku_notification:client:dismiss` and `siku_notification:client:clear` (server → client) carry the normalized payload, an id, or a position.
 
 ### Positions
 
-`top-left`, `top-center`, `top-right`, `center-left`, `center`, `center-right`, `bottom-left`, `bottom-center`, `bottom-right`.
-
-### Icons
-
-Icons are resolved from a curated SVG set (`web/src/utils/icons.ts`, tree-shaken from `@mdi/js`). An unknown name falls back to the default bell icon. Supporting a new icon is a one-line addition to the map, followed by a rebuild.
+`top-left`, `top-center`, `top-right`, `left`, `center`, `right`, `bottom-left`, `bottom-center`, `bottom-right`.
 
 ## Lifecycle
 
-1. A call to `show` validates and normalizes the payload (type, position, duration, image mode).
-2. If fewer than `maxVisiblePerPosition` notifications occupy the target position, the card mounts and its timer starts; otherwise it waits in that position's FIFO queue.
-3. When a notification expires, the next queued one is promoted immediately — nothing is ever dropped.
-4. `hide` clears the player's active notifications and queue at once.
+1. `show` validates and normalizes the payload (type, texts, icon, image, position, duration) and refuses what has nothing to show.
+2. If the identical notification is already on screen at that position, it gains a `×N` counter and a fresh timer (`coalesce`).
+3. If fewer than `maxVisiblePerPosition` cards occupy the position, the card mounts and its timer starts; otherwise it waits in that position's queue.
+4. When a card expires or is dismissed, the next waiting one takes its place at once.
+5. `hide` clears one position or every position, queue included.
+
+## Logs
+
+| Event | Level | When |
+|---|---|---|
+| `notification.rejected` | warn | An export was refused: `data.reason` is `target_invalid`, `invalid_payload`, `empty`, `id_invalid` or `position_invalid`, `data.resource` names the caller. |
 
 ## Translations
 
-`translations/fr.lua` and `translations/en.lua` hold the player-facing strings. The active language (`config/translation.lua`) is loaded by the server and pushed to the NUI at runtime — no rebuild needed to switch.
+`translations/fr.lua` and `translations/en.lua` hold the interface strings in their `web` block. The active language (`config/translation.lua`) is pushed to the interface at runtime; `bun run locales` derives the Paraglide messages from the Lua files, which stay the only place a string is written.
 
 ## Development
 
-The NUI lives in `web/` (Vue 3, Pinia, Tailwind, Vite — built with [bun](https://bun.sh)).
+The interface lives in `web/` (Svelte 5, `@siku/ui`, Tailwind, Paraglide, Vite, built with [bun](https://bun.sh)).
 
 ```bash
 cd web
 bun install
-bun dev          # dev playground with a full notification control panel
-bun run build    # production build → web/dist
-bun run check    # format + type-check + lint
+bun run dev          # playground with a simulation panel: presets, burst, every field
+bun run check        # locales, format, type-check, lint
+bun run test:unit    # vitest
+bun run lint:siku    # design-system rules and doctor
+bun run build        # production build → web/dist
 ```
 
-In development the app boots into a playground with a control panel covering every field, presets and a spam test; in production only the notification view ships.
+In development the app boots into the playground; in production only the notification layer ships.
 
 ```
 siku_notification/
-├── client/            # NUI bridge, exports, net event handlers
+├── client/            # siku_ui bridge, NUI transport, exports, net events
 ├── server/            # dependency guard, exports
-├── shared/utils/      # locale loading
+├── shared/            # payload normalization shared by both sides
 ├── config/            # all configuration
 ├── translations/      # fr / en
-├── docs/              # design specs
-└── web/               # Vue 3 NUI
+└── web/               # Svelte 5 interface
 ```
 
 ## Credits
