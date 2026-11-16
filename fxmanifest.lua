@@ -2,8 +2,8 @@ fx_version 'cerulean'
 game 'gta5'
 
 author 'Siku Studio'
-description 'The official notification system of the SIKU ecosystem — a modern, modular and high-performance resource delivering immersive, consistent, and seamlessly integrated player notifications.'
-version '1.0.0'
+description 'The official notification system of the SIKU ecosystem: nine screen positions, a queue per position, merged repeats, images and a design-system interface shared with every SIKU resource.'
+version '2.0.0'
 
 name 'siku_notification'
 
@@ -11,8 +11,8 @@ lua54 'yes'
 
 shared_scripts {
   '@siku_core/init.lua',
-  'config/notification.lua',
-  'config/translation.lua',
+  'config/*.lua',
+  'shared/normalize.lua',
 }
 
 server_scripts {
@@ -21,6 +21,8 @@ server_scripts {
 }
 
 client_scripts {
+  'client/siku_ui.lua',
+  'client/nui.lua',
   'client/main.lua',
 }
 
