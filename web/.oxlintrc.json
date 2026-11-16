@@ -1,21 +1,11 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": [
-    "eslint",
-    "typescript",
-    "unicorn",
-    "oxc",
-    "vue",
-    "vitest"
-  ],
+  "plugins": ["eslint", "typescript", "unicorn", "oxc"],
   "env": {
     "browser": true
   },
   "categories": {
     "correctness": "error"
   },
-  "ignorePatterns": [
-    "dist/",
-    "node_modules/"
-  ]
+  "ignorePatterns": ["dist/", "node_modules/", "src/paraglide/", "**/*.svelte"]
 }

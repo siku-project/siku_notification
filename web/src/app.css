@@ -1,0 +1,81 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.notification-anchor {
+  position: fixed;
+  z-index: var(--z-toast);
+  display: grid;
+  inset: calc(var(--safe-y) + var(--space-8)) calc(var(--safe-x) + var(--space-8));
+  pointer-events: none;
+}
+
+.notification-anchor--top-left {
+  place-items: start start;
+}
+
+.notification-anchor--top-center {
+  place-items: start center;
+}
+
+.notification-anchor--top-right {
+  place-items: start end;
+}
+
+.notification-anchor--left {
+  place-items: center start;
+}
+
+.notification-anchor--center {
+  place-items: center center;
+}
+
+.notification-anchor--right {
+  place-items: center end;
+}
+
+.notification-anchor--bottom-left {
+  place-items: end start;
+}
+
+.notification-anchor--bottom-center {
+  place-items: end center;
+}
+
+.notification-anchor--bottom-right {
+  place-items: end end;
+}
+
+.notification-stack {
+  display: flex;
+  max-height: 100%;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-2);
+}
+
+.notification-stack--top-center,
+.notification-stack--center,
+.notification-stack--bottom-center {
+  align-items: center;
+}
+
+.notification-stack--top-right,
+.notification-stack--right,
+.notification-stack--bottom-right {
+  align-items: flex-end;
+}
+
+.notification-stack--bottom-left .notification-stack__queued,
+.notification-stack--bottom-center .notification-stack__queued,
+.notification-stack--bottom-right .notification-stack__queued {
+  order: -1;
+}
+
+.notification-stack__item {
+  will-change: transform, opacity;
+}
+
+.notification-stack__queued {
+  padding: 0 var(--space-2);
+}
